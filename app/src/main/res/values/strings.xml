@@ -1,4 +1,12 @@
 <resources>
-    <string name="app_name">سلام !</string>
+    <string name="app_name">! سلام</string>
     <string name="salam_slogan">گفت و گویی شیرین و امن</string>
+    <string name="salam_slogan_fast_title">سرعت بالا</string>
+    <string name="salam_slogan_security_title">گفت و گویی امن و شیرین</string>
+    <string name="salam_slogan_strong_title">قدرتمند و قوی</string>
+    <string name="salam_slogan_strong_text">با وجود اینکه سلام , نمونه کوچکی از یک شبکه تورنت هست ولی قدرت و پایداری بالایی داره !</string>
+    <string name="salam_slogan_security_text">با پیام رسان سلام با راحتی و اطمینان خاطر هر چه تمام فعالیت کنید و لذت ببرید.</string>
+    <string name="salam_slogan_fast_text">سلام , پیام رسانی سریع است که این سرعت را مدیون استفاده از شبکه تورنت هست.</string>
+    <string name="shared_name">userInfo</string>
+    <string name="shared_key_enter">isUserEnter</string>
 </resources>

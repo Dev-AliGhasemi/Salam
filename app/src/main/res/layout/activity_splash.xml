@@ -6,4 +6,9 @@
     android:background="@android:color/white"
     tools:context=".SplashActivity">
 
+    <androidx.viewpager.widget.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/splashViewPager"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

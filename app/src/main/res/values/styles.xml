@@ -6,26 +6,40 @@
     </style>
 
 
-    <style name="TextViewSilver" parent="Widget.AppCompat.TextView">
+    <style name="TextViewSloganTitle" parent="Widget.AppCompat.TextView">
         <item name="android:textColor">@color/colorSlogan</item>
-        <item name="fontFamily">@font/iran_sans</item>
+        <item name="android:fontFamily">@font/iran_sans</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/sizeSloganTitle</item>
+    </style>
+
+    <style name="TextViewSloganText" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/colorSlogan</item>
+        <item name="android:fontFamily">@font/iran_sans</item>
+        <item name="android:textSize">@dimen/sizeSloganText</item>
+    </style>
+
+    <style name="BlueButton" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/iran_sans</item>
+        <item name="android:background">@drawable/blue_button_selector</item>
     </style>
 
     <style name="AppThemeSplash" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@drawable/layer</item>
+        <item name="android:windowBackground">@drawable/splash</item>
         <item name="android:configChanges">keyboardHidden|orientation</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
     </style>
     <style name="AppThemeWithoutActionBar" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:configChanges">keyboardHidden|orientation</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
     </style>
 </resources>

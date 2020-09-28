@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:weightSum="5">
+
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="animations/fast.json"
+        app:lottie_loop="true" />
+
+    <TextView
+        style="@style/TextViewSloganTitle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:text="@string/salam_slogan_fast_title"
+        android:textSize="20sp" />
+
+    <TextView
+        style="@style/TextViewSloganText"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.5"
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/salam_slogan_fast_text" />
+
+    <Button
+        android:id="@+id/splashButtonEnter"
+        style="@style/BlueButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:text="ورود" />
+
+</LinearLayout>
