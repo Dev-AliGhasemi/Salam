@@ -4,15 +4,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context=".MainActivity">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/mainImageProfile"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="100dp"
+        android:scaleType="centerCrop"
+        app:civ_border_color="@color/colorAccent"
+        app:civ_border_width="2dp"
+        android:src="@color/colorProfile"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@id/mainImageProfile"
+        app:layout_constraintBottom_toBottomOf="@id/mainImageProfile"
+        app:layout_constraintLeft_toLeftOf="@id/mainImageProfile"
+        app:layout_constraintRight_toRightOf="@id/mainImageProfile"
+        style="@style/TextViewSloganText"
+        android:text="انتخاب پروفایل"/>
+
+    <EditText
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/mainEditName"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp"
+        android:background="@drawable/edit_login_selector"
+        android:textDirection="rtl"
+        android:hint="لطفا نام خود را وارد کنید.(الزامی)"
+        android:layout_marginTop="40dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/mainImageProfile"
+        style="@style/EditTextLogin"/>
+
+    <EditText
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/EditTextLogin"
+        android:id="@+id/mainEditIP"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mainEditName"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginLeft="80dp"
+        android:textDirection="rtl"
+        android:hint="IP ادمین شبکه (در صورت نیاز)"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ارسال درخواست"
+        style="@style/BlueButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mainEditIP"
+        android:layout_marginTop="40dp"/>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

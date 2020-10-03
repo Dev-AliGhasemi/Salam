@@ -5,4 +5,6 @@
     <color name="colorAccent">#2A91AD</color>
     <color name="colorAccentDark">#24819A</color>
     <color name="colorSlogan">#707070</color>
+    <color name="colorSloganAlpha">#A9707070</color>
+    <color name="colorProfile">#16A1A0A0</color>
 </resources>

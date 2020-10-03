@@ -10,25 +10,39 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.airbnb.lottie.LottieAnimationView;
 
+import java.lang.reflect.InvocationTargetException;
+
 import ir.vira.salam.Adapters.ViewPagerAdapter;
 import ir.vira.salam.Fragments.SplashSecurityFragment;
+import ir.vira.salam.Network.NetworkInformation;
 
 public class SplashActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         initializeViews();
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_name) , Context.MODE_PRIVATE);
-        if (sharedPreferences.contains(getString(R.string.shared_key_enter)))
-            startActivity(new Intent(this , MainActivity.class));
-        else {
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_name), Context.MODE_PRIVATE);
+        if (sharedPreferences.contains(getString(R.string.shared_key_enter))) {
+            try {
+                checkNetwork();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        } else {
             viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
@@ -50,8 +64,35 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
+    public void btnConnectionClickListener(View view) {
+        try {
+            checkNetwork();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void initializeViews() {
         viewPager = findViewById(R.id.splashViewPager);
+        button = findViewById(R.id.splashButtonCheckConnection);
+    }
+
+    private void checkNetwork() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        button.setVisibility(View.INVISIBLE);
+        NetworkInformation networkInformation = new NetworkInformation(this);
+        if (networkInformation.isWifiEnabled()) {
+            if (networkInformation.isConnectedToNetwork())
+                startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            else
+                button.setVisibility(View.VISIBLE);
+        } else if (networkInformation.isWifiAccessPointEnabled()) {
+            //TODO go to chat as admin
+        } else
+            button.setVisibility(View.VISIBLE);
     }
 
 }
