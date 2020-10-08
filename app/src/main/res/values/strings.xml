@@ -9,4 +9,9 @@
     <string name="salam_slogan_fast_text">سلام , پیام رسانی سریع است که این سرعت را مدیون استفاده از شبکه تورنت هست.</string>
     <string name="shared_name">userInfo</string>
     <string name="shared_key_enter">isUserEnter</string>
+    <string-array name="item_name">
+        <item>انتخاب از گالری</item>
+        <item>گرفتن عکس</item>
+        <item>حذف کردن</item>
+    </string-array>
 </resources>

@@ -32,7 +32,7 @@ public class NetworkInformation {
         return Formatter.formatIpAddress(wifiManager.getDhcpInfo().serverAddress);
     }
 
-    public boolean isConnectedToNetwork(){
+    public boolean isConnectedToNetwork() {
         if (getIpAddress().equals("0.0.0.0"))
             return false;
         else

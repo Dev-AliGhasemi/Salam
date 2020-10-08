@@ -27,6 +27,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -114,9 +115,9 @@ public class Utils {
             e.printStackTrace();
         }
         if (tempImage != null) {
-            Uri uri = FileProvider.getUriForFile(context, "image-Capture", tempImage);
+            Uri uri = FileProvider.getUriForFile(context, "image-capture", tempImage);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-            activity.startActivityForResult(intent, context.getResources().getInteger(imageCaptureRequestCode));
+            activity.startActivityForResult(intent, imageCaptureRequestCode);
         } else
             AdvancedToast.makeText(context, "در گرفتن عکس مشکلی پیش آمده است .", Toast.LENGTH_LONG).show();
     }
@@ -124,7 +125,7 @@ public class Utils {
     public void chooseImageFromGallery(Activity activity , int chooseImageFromGalleryRequestCode) {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/jpg");
-        activity.startActivityForResult(intent, context.getResources().getInteger(chooseImageFromGalleryRequestCode));
+        activity.startActivityForResult(intent, chooseImageFromGalleryRequestCode);
     }
 
     private File createTempImageFile() throws IOException {
