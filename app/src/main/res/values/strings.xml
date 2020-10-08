@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">! سلام</string>
+    <string name="valid_digits_for_ip">1234567890.</string>
     <string name="salam_slogan">گفت و گویی شیرین و امن</string>
     <string name="salam_slogan_fast_title">سرعت بالا</string>
     <string name="salam_slogan_security_title">گفت و گویی امن و شیرین</string>
@@ -9,6 +10,9 @@
     <string name="salam_slogan_fast_text">سلام , پیام رسانی سریع است که این سرعت را مدیون استفاده از شبکه تورنت هست.</string>
     <string name="shared_name">userInfo</string>
     <string name="shared_key_enter">isUserEnter</string>
+    <string name="shared_key_profile">profile</string>
+    <string name="shared_key_username">username</string>
+
     <string-array name="item_name">
         <item>انتخاب از گالری</item>
         <item>گرفتن عکس</item>

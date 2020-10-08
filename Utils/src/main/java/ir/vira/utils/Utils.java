@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Environment;
@@ -16,7 +17,6 @@ import android.view.Display;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -24,10 +24,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -107,7 +107,7 @@ public class Utils {
         }
     }
 
-    public void takeImage(Activity activity , int imageCaptureRequestCode) {
+    public void takeImage(Activity activity, int imageCaptureRequestCode) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
             tempImage = createTempImageFile();
@@ -122,7 +122,7 @@ public class Utils {
             AdvancedToast.makeText(context, "در گرفتن عکس مشکلی پیش آمده است .", Toast.LENGTH_LONG).show();
     }
 
-    public void chooseImageFromGallery(Activity activity , int chooseImageFromGalleryRequestCode) {
+    public void chooseImageFromGallery(Activity activity, int chooseImageFromGalleryRequestCode) {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/jpg");
         activity.startActivityForResult(intent, chooseImageFromGalleryRequestCode);
@@ -140,6 +140,12 @@ public class Utils {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream);
         String encodedStr = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
         return encodedStr;
+    }
+
+    public Bitmap getBitmap(String encodedImage) {
+        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        return bitmap;
     }
 
     public HashMap<String, Integer> getScreenSize(Activity activity) {
