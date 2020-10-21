@@ -1,3 +1,4 @@
-include ':Utils'
+include ':network'
+include ':utils'
 include ':app'
 rootProject.name = "Salam"

@@ -8,18 +8,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.ServerSocket;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import ir.vira.salam.Network.NetworkInformation;
+import ir.vira.network.NetworkInformation;
+import ir.vira.salam.DesignPatterns.Factory.ThreadFactory;
+import ir.vira.salam.Enumerations.ThreadType;
+import ir.vira.salam.Sockets.SocketListener;
+import ir.vira.salam.Threads.ConnectToServerThread;
+import ir.vira.utils.AdvancedToast;
+import ir.vira.utils.EncryptionAlgorithm;
 import ir.vira.utils.Utils;
 
 public class MainActivity extends AppCompatActivity {
@@ -75,6 +88,28 @@ public class MainActivity extends AppCompatActivity {
             else {
                 sharedPreferences.edit().putString(getString(R.string.shared_key_username), editTextName.getText().toString()).commit();
                 btnSendRequest.setVisibility(View.INVISIBLE);
+                Thread thread = ThreadFactory.getThread(ThreadType.CONNECT_TO_SERVER);
+                SocketListener socketListener = socket -> {
+                    if (socket.isConnected()) {
+                        try {
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("event", "join");
+                            jsonObject.put("ip", Utils.encodeToString(Utils.encryptData(networkInformation.getIpAddress(), EncryptionAlgorithm.AES)));
+                            jsonObject.put("name", Utils.encodeToString(Utils.encryptData(editTextName.getText().toString(), EncryptionAlgorithm.AES)));
+                            jsonObject.put("profile", Utils.encodeToString(Utils.encryptData(sharedPreferences.getString(getString(R.string.shared_key_profile), ""), EncryptionAlgorithm.AES)));
+                            jsonObject.put("secretKey", Utils.encodeToString(utils.generateKey(EncryptionAlgorithm.AES).getEncoded()));
+                            socket.getOutputStream().write(jsonObject.toString().getBytes());
+                            ServerSocket serverSocket = new ServerSocket(getResources().getInteger(R.integer.portNumber));
+                            
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        btnSendRequest.setVisibility(View.VISIBLE);
+                        AdvancedToast.makeText(this, getString(R.string.problem_in_connect_to_server), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
+                    }
+                };
+                ((ConnectToServerThread) thread).setupConnection(networkInformation.getServerIpAddress(), getResources().getInteger(R.integer.portNumber), this, );
             }
         });
     }

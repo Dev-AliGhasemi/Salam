@@ -12,7 +12,7 @@
     <string name="shared_key_enter">isUserEnter</string>
     <string name="shared_key_profile">profile</string>
     <string name="shared_key_username">username</string>
-
+    <string name="problem_in_connect_to_server">مشکل در ارتباط با سرور !</string>
     <string-array name="item_name">
         <item>انتخاب از گالری</item>
         <item>گرفتن عکس</item>
