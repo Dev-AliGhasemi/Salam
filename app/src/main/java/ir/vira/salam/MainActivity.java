@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                                     messageModels.add(messageModel);
                                 }
                                 messageContract.addAll(messageModels);
-                                startActivity(new Intent(this, ChatActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                                startActivity(new Intent(this, ChatActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra("isAdmin", false));
                             } else {
                                 runOnUiThread(() -> {
                                     btnSendRequest.setVisibility(View.VISIBLE);

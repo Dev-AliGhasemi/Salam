@@ -162,14 +162,14 @@ public class Utils {
         return tempImage;
     }
 
-    public String getEncodeImage(Bitmap bitmap) {
+    public static String getEncodeImage(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream);
         String encodedStr = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
         return encodedStr;
     }
 
-    public Bitmap getBitmap(String encodedImage) {
+    public static Bitmap getBitmap(String encodedImage) {
         byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         return bitmap;

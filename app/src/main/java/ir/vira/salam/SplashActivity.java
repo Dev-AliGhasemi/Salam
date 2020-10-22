@@ -1,7 +1,6 @@
 package ir.vira.salam;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -9,17 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.airbnb.lottie.LottieAnimationView;
-
 import java.lang.reflect.InvocationTargetException;
 
+import ir.vira.network.NetworkInformation;
 import ir.vira.salam.Adapters.ViewPagerAdapter;
 import ir.vira.salam.Fragments.SplashSecurityFragment;
-import ir.vira.salam.Network.NetworkInformation;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -90,7 +86,7 @@ public class SplashActivity extends AppCompatActivity {
             else
                 button.setVisibility(View.VISIBLE);
         } else if (networkInformation.isWifiAccessPointEnabled()) {
-            //TODO go to chat as admin
+            startActivity(new Intent(this, ChatActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra("isAdmin" , true));
         } else
             button.setVisibility(View.VISIBLE);
     }
