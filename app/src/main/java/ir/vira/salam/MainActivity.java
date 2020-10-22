@@ -8,27 +8,43 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ir.vira.network.NetworkInformation;
+import ir.vira.salam.Contracts.MessageContract;
+import ir.vira.salam.Contracts.UserContract;
+import ir.vira.salam.DesignPatterns.Factory.RepositoryFactory;
 import ir.vira.salam.DesignPatterns.Factory.ThreadFactory;
+import ir.vira.salam.Enumerations.RepositoryType;
 import ir.vira.salam.Enumerations.ThreadType;
+import ir.vira.salam.Models.MessageModel;
+import ir.vira.salam.Models.UserModel;
+import ir.vira.salam.Repositories.UserRepository;
+import ir.vira.salam.Sockets.ErrorSocketListener;
 import ir.vira.salam.Sockets.SocketListener;
 import ir.vira.salam.Threads.ConnectToServerThread;
 import ir.vira.utils.AdvancedToast;
@@ -99,17 +115,63 @@ public class MainActivity extends AppCompatActivity {
                             jsonObject.put("profile", Utils.encodeToString(Utils.encryptData(sharedPreferences.getString(getString(R.string.shared_key_profile), ""), EncryptionAlgorithm.AES)));
                             jsonObject.put("secretKey", Utils.encodeToString(utils.generateKey(EncryptionAlgorithm.AES).getEncoded()));
                             socket.getOutputStream().write(jsonObject.toString().getBytes());
+                            socket.close();
                             ServerSocket serverSocket = new ServerSocket(getResources().getInteger(R.integer.portNumber));
-                            
+                            Socket socketReceived = serverSocket.accept();
+                            byte[] buff = new byte[socketReceived.getInputStream().available()];
+                            socketReceived.getInputStream().read(buff);
+                            jsonObject = new JSONObject(buff.toString());
+                            if (jsonObject.getString("requestStatus").equals("accept")) {
+                                UserContract userContract = (UserContract) RepositoryFactory.getRepository(RepositoryType.USER_REPO);
+                                MessageContract messageContract = (MessageContract) RepositoryFactory.getRepository(RepositoryType.MESSAGE_REPO);
+                                List<UserModel> userModels = new ArrayList<>();
+                                List<MessageModel> messageModels = new ArrayList<>();
+                                JSONArray jsonArrayUsers = jsonObject.getJSONArray("users");
+                                JSONArray jsonArrayMessages = jsonObject.getJSONArray("messages");
+                                Bitmap profile;
+                                SecretKey secretKey;
+                                byte[] decodedKey, decodedProfile;
+                                String decryptedProfile, ip, name;
+                                for (int i = 0; i < jsonArrayUsers.length(); i++) {
+                                    decodedKey = Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("secretKey"));
+                                    secretKey = new SecretKeySpec(decodedKey, EncryptionAlgorithm.AES.name());
+                                    decodedProfile = Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("profile"));
+                                    decryptedProfile = Utils.decryptData(decodedProfile, secretKey, EncryptionAlgorithm.AES);
+                                    decodedProfile = Base64.decode(decryptedProfile, Base64.DEFAULT);
+                                    profile = BitmapFactory.decodeByteArray(decodedProfile, 0, decodedProfile.length);
+                                    ip = jsonArrayUsers.getJSONObject(i).getString("ip");
+                                    name = jsonArrayUsers.getJSONObject(i).getString("name");
+                                    UserModel userModel = new UserModel(ip, name, profile, secretKey);
+                                    userModels.add(userModel);
+                                }
+                                userContract.addAll(userModels);
+                                for (int i = 0; i < jsonArrayMessages.length(); i++) {
+                                    MessageModel messageModel = new MessageModel(userContract.findUserByIP(jsonArrayMessages.getJSONObject(i).getString("ip")), jsonArrayMessages.getJSONObject(i).getString("text"));
+                                    messageModels.add(messageModel);
+                                }
+                                messageContract.addAll(messageModels);
+                                startActivity(new Intent(this, ChatActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                            } else {
+                                runOnUiThread(() -> {
+                                    btnSendRequest.setVisibility(View.VISIBLE);
+                                    AdvancedToast.makeText(this, getResources().getString(R.string.msg_admin_did_not_allowed), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
+                                });
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     } else {
                         btnSendRequest.setVisibility(View.VISIBLE);
-                        AdvancedToast.makeText(this, getString(R.string.problem_in_connect_to_server), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
+                        AdvancedToast.makeText(this, getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
                     }
                 };
-                ((ConnectToServerThread) thread).setupConnection(networkInformation.getServerIpAddress(), getResources().getInteger(R.integer.portNumber), this, );
+                ErrorSocketListener errorSocketListener = message -> {
+                    Log.e("Error", message);
+                    AdvancedToast.makeText(this, getResources().getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sas.ttf");
+                };
+                ((ConnectToServerThread) thread).setupConnection(networkInformation.getServerIpAddress(), getResources().getInteger(R.integer.portNumber), this, socketListener, errorSocketListener);
+                thread.setPriority(Thread.MAX_PRIORITY);
+                thread.start();
             }
         });
     }

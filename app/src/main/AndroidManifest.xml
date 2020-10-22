@@ -11,11 +11,13 @@
         android:roundIcon="@mipmap/ic_salam_round"
         android:supportsRtl="true"
         android:theme="@style/AppThemeWithoutActionBar">
+        <activity android:name=".ChatActivity"></activity>
         <activity
             android:name=".SplashActivity"
             android:theme="@style/AppThemeSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
