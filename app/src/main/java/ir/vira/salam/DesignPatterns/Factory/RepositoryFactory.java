@@ -1,5 +1,8 @@
 package ir.vira.salam.DesignPatterns.Factory;
 
+import java.io.IOError;
+import java.io.IOException;
+
 import ir.vira.salam.Contracts.Contract;
 import ir.vira.salam.Enumerations.RepositoryType;
 import ir.vira.salam.Repositories.MessageRepository;
@@ -13,7 +16,7 @@ public class RepositoryFactory {
             case MESSAGE_REPO:
                 return MessageRepository.getInstance();
             default:
-                Exception exception = new Exception("repo type invalid ");
+                Exception exception = new Exception("repo type is invalid ! ");
                 exception.printStackTrace();
                 return null;
         }

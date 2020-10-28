@@ -8,4 +8,9 @@ public enum EventType {
     EventType(String eventType) {
         this.eventType = eventType;
     }
+
+    @Override
+    public String toString() {
+        return eventType;
+    }
 }

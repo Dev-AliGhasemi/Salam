@@ -20,10 +20,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -68,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         utils = Utils.getInstance(this);
         sharedPreferences = getSharedPreferences(getString(R.string.shared_name), Context.MODE_PRIVATE);
         if (sharedPreferences.contains(getString(R.string.shared_key_profile))) {
-            Bitmap bitmap = utils.getBitmap(sharedPreferences.getString(getString(R.string.shared_key_profile), ""));
+            Bitmap bitmap = Utils.getBitmap(sharedPreferences.getString(getString(R.string.shared_key_profile), ""));
             circleImageView.setImageBitmap(bitmap);
             textViewProfile.setVisibility(View.INVISIBLE);
         }
@@ -105,16 +112,20 @@ public class MainActivity extends AppCompatActivity {
                 sharedPreferences.edit().putString(getString(R.string.shared_key_username), editTextName.getText().toString()).commit();
                 btnSendRequest.setVisibility(View.INVISIBLE);
                 Thread thread = ThreadFactory.getThread(ThreadType.CONNECT_TO_SERVER);
+
                 SocketListener socketListener = socket -> {
                     if (socket.isConnected()) {
                         try {
                             JSONObject jsonObject = new JSONObject();
-                            jsonObject.put("event", "join");
+                            jsonObject.put("event", "JOIN");
                             jsonObject.put("ip", Utils.encodeToString(Utils.encryptData(networkInformation.getIpAddress(), EncryptionAlgorithm.AES)));
                             jsonObject.put("name", Utils.encodeToString(Utils.encryptData(editTextName.getText().toString(), EncryptionAlgorithm.AES)));
-                            jsonObject.put("profile", Utils.encodeToString(Utils.encryptData(sharedPreferences.getString(getString(R.string.shared_key_profile), ""), EncryptionAlgorithm.AES)));
                             jsonObject.put("secretKey", Utils.encodeToString(utils.generateKey(EncryptionAlgorithm.AES).getEncoded()));
-                            socket.getOutputStream().write(jsonObject.toString().getBytes());
+                            jsonObject.put("profile", Utils.encodeToString(Utils.encryptData(sharedPreferences.getString(getString(R.string.shared_key_profile), ""), EncryptionAlgorithm.AES)));
+                            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                            dataOutputStream.writeUTF(jsonObject.toString());
+                            dataOutputStream.flush();
+                            dataOutputStream.close();
                             socket.close();
                             ServerSocket serverSocket = new ServerSocket(getResources().getInteger(R.integer.portNumber));
                             Socket socketReceived = serverSocket.accept();
@@ -166,8 +177,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
                 ErrorSocketListener errorSocketListener = message -> {
-                    Log.e("Error", message);
-                    AdvancedToast.makeText(this, getResources().getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sas.ttf");
+                    runOnUiThread(() -> {
+                        btnSendRequest.setVisibility(View.VISIBLE);
+                        Log.e("Error", message);
+                        AdvancedToast.makeText(this, getResources().getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
+                    });
                 };
                 ((ConnectToServerThread) thread).setupConnection(networkInformation.getServerIpAddress(), getResources().getInteger(R.integer.portNumber), this, socketListener, errorSocketListener);
                 thread.setPriority(Thread.MAX_PRIORITY);

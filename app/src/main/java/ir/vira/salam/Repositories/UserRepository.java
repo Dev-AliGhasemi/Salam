@@ -26,6 +26,11 @@ public class UserRepository implements UserContract {
     }
 
     @Override
+    public void add(UserModel item) {
+
+    }
+
+    @Override
     public UserModel findUserByIP(String ip) {
         for (int i = 0; i < userModels.size(); i++) {
             if (userModels.get(i).getIp().equals(ip))

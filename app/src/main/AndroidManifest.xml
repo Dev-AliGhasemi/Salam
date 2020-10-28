@@ -3,9 +3,11 @@
     package="ir.vira.salam">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_salam"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_salam_round"

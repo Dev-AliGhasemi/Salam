@@ -12,6 +12,7 @@
     <string name="shared_key_enter">isUserEnter</string>
     <string name="shared_key_profile">profile</string>
     <string name="shared_key_username">username</string>
+    <string name="font_path">fonts/iran_sans.ttf</string>
     <string name="problem_in_connect_to_admin">مشکل در ارتباط با ادمین !</string>
     <string name="msg_admin_did_not_allowed">ادمین اجازه ورود نداد !</string>
     <string-array name="item_name">

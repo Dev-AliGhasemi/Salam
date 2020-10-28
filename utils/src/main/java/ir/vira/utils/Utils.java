@@ -275,7 +275,7 @@ public class Utils {
         try {
             getCipher(encryptionAlgorithm).init(Cipher.DECRYPT_MODE, secretKey);
             byte[] dataDecrypted = cipher.doFinal(dataToDecrypt);
-            return dataDecrypted.toString();
+            return new String(dataDecrypted);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
