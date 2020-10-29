@@ -26,11 +26,13 @@ import org.json.JSONObject;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -129,9 +131,11 @@ public class MainActivity extends AppCompatActivity {
                             socket.close();
                             ServerSocket serverSocket = new ServerSocket(getResources().getInteger(R.integer.portNumber));
                             Socket socketReceived = serverSocket.accept();
-                            byte[] buff = new byte[socketReceived.getInputStream().available()];
-                            socketReceived.getInputStream().read(buff);
-                            jsonObject = new JSONObject(buff.toString());
+                            DataInputStream dataInputStream = new DataInputStream(socketReceived.getInputStream());
+                            jsonObject = new JSONObject(dataInputStream.readUTF());
+                            dataInputStream.close();
+                            socketReceived.close();
+                            serverSocket.close();
                             if (jsonObject.getString("requestStatus").equals("accept")) {
                                 UserContract userContract = (UserContract) RepositoryFactory.getRepository(RepositoryType.USER_REPO);
                                 MessageContract messageContract = (MessageContract) RepositoryFactory.getRepository(RepositoryType.MESSAGE_REPO);
@@ -165,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 runOnUiThread(() -> {
                                     btnSendRequest.setVisibility(View.VISIBLE);
-                                    AdvancedToast.makeText(this, getResources().getString(R.string.msg_admin_did_not_allowed), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
+                                    AdvancedToast.makeText(MainActivity.this, getResources().getString(R.string.msg_admin_did_not_allowed), Toast.LENGTH_LONG, "fonts/iran_sans.ttf").show();
                                 });
                             }
                         } catch (Exception e) {
@@ -173,13 +177,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                     } else {
                         btnSendRequest.setVisibility(View.VISIBLE);
-                        AdvancedToast.makeText(this, getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
+                        AdvancedToast.makeText(MainActivity.this, getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
                     }
                 };
                 ErrorSocketListener errorSocketListener = message -> {
                     runOnUiThread(() -> {
                         btnSendRequest.setVisibility(View.VISIBLE);
-                        Log.e("Error", message);
                         AdvancedToast.makeText(this, getResources().getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
                     });
                 };

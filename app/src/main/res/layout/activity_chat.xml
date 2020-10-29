@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context=".ChatActivity">
 
     <LinearLayout
@@ -30,7 +31,8 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:layout_constraintBottom_toBottomOf="parent">
-        <include layout="@layout/text_message_layout"/>
+
+        <include layout="@layout/text_message_layout" />
     </LinearLayout>
 
 
