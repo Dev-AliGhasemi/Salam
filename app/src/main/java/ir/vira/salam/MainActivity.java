@@ -177,13 +177,13 @@ public class MainActivity extends AppCompatActivity {
                         }
                     } else {
                         btnSendRequest.setVisibility(View.VISIBLE);
-                        AdvancedToast.makeText(MainActivity.this, getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
+                        AdvancedToast.makeText(MainActivity.this, getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sans.ttf").show();
                     }
                 };
                 ErrorSocketListener errorSocketListener = message -> {
                     runOnUiThread(() -> {
                         btnSendRequest.setVisibility(View.VISIBLE);
-                        AdvancedToast.makeText(this, getResources().getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sans.ttf");
+                        AdvancedToast.makeText(this, getResources().getString(R.string.problem_in_connect_to_admin), Toast.LENGTH_LONG, "fonts/iran_sans.ttf").show();
                     });
                 };
                 ((ConnectToServerThread) thread).setupConnection(networkInformation.getServerIpAddress(), getResources().getInteger(R.integer.portNumber), this, socketListener, errorSocketListener);

@@ -47,4 +47,7 @@ public class JoinNotification {
 
     }
 
+    public static int getNotifyId() {
+        return NOTIFY_ID;
+    }
 }

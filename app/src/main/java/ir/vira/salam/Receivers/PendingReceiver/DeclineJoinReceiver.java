@@ -1,5 +1,6 @@
 package ir.vira.salam.Receivers.PendingReceiver;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import ir.vira.salam.Models.UserModel;
+import ir.vira.salam.Notifications.JoinNotification;
 import ir.vira.salam.R;
 
 public class DeclineJoinReceiver extends BroadcastReceiver {
@@ -17,6 +19,8 @@ public class DeclineJoinReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         UserModel userModel = (UserModel) intent.getSerializableExtra("user");
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(JoinNotification.getNotifyId());
         Thread thread = new Thread(() -> {
             try {
                 Socket socket = new Socket(userModel.getIp(), context.getResources().getInteger(R.integer.portNumber));
