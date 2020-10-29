@@ -24,15 +24,11 @@ import ir.vira.salam.Threads.ServerEventThread;
 public class ChatActivity extends AppCompatActivity {
 
     private Thread thread;
-    private ImageView imageView;
-    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        imageView = findViewById(R.id.imageView);
-        textView = findViewById(R.id.textView);
         if (getIntent().getBooleanExtra("isAdmin", false)) {
             thread = ThreadFactory.getThread(ThreadType.SERVER_EVENT);
             try {
@@ -51,7 +47,7 @@ public class ChatActivity extends AppCompatActivity {
         ((ServerEventThread) thread).on(EventType.JOIN, (JoinEventListener) userModel -> {
             UserContract userContract = (UserContract) RepositoryFactory.getRepository(RepositoryType.USER_REPO);
             userContract.add(userModel);
-            runOnUiThread(() -> imageView.setImageBitmap(userModel.getProfile()));
+            //runOnUiThread(() -> imageView.setImageBitmap(userModel.getProfile()));
             Log.e("join", "one use added !");
         });
     }
