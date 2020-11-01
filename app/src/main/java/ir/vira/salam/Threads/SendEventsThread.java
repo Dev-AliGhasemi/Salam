@@ -6,6 +6,10 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,6 +19,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import ir.vira.network.NetworkInformation;
+import ir.vira.salam.Adapters.ChatRecyclerAdapter;
 import ir.vira.salam.Contracts.MessageContract;
 import ir.vira.salam.Contracts.UserContract;
 import ir.vira.salam.DesignPatterns.Factory.RepositoryFactory;
@@ -29,10 +34,12 @@ public class SendEventsThread extends Thread {
 
     private Context context;
     private MessageModel messageModel;
+    private RecyclerView recyclerView;
 
-    public void setMessageModel(MessageModel messageModel, Context context) {
+    public void setMessageModel(MessageModel messageModel, Context context, RecyclerView recyclerView) {
         this.messageModel = messageModel;
         this.context = context;
+        this.recyclerView = recyclerView;
     }
 
     @Override
@@ -62,6 +69,11 @@ public class SendEventsThread extends Thread {
             }
             MessageContract messageContract = (MessageContract) RepositoryFactory.getRepository(RepositoryType.MESSAGE_REPO);
             messageContract.add(messageModel);
+            ((Activity) context).runOnUiThread(() -> {
+                ((ChatRecyclerAdapter) recyclerView.getAdapter()).newMsg(messageModel);
+                ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPosition(0);
+
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {

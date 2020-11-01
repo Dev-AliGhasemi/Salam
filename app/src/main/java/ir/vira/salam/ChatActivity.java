@@ -1,9 +1,13 @@
 package ir.vira.salam;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +25,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import ir.vira.network.NetworkInformation;
+import ir.vira.salam.Adapters.ChatRecyclerAdapter;
 import ir.vira.salam.Contracts.MessageContract;
 import ir.vira.salam.Contracts.UserContract;
 import ir.vira.salam.DesignPatterns.Factory.RepositoryFactory;
@@ -49,6 +54,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private UserContract userContract;
     private static Activity activity;
     private JoinEventListener joinEventListener;
+    private RecyclerView recyclerView;
+    private ChatRecyclerAdapter chatRecyclerAdapter;
 
     public static TextView getTextViewMemberNum() {
         return textViewMemberNum;
@@ -75,27 +82,34 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 NetworkInformation networkInformation = new NetworkInformation(this);
                 Bitmap profile = utils.getBitmap(R.drawable.ic_admin);
                 userContract.add(new UserModel(networkInformation.getIpAddress(), "Admin", profile, Utils.generateKey(EncryptionAlgorithm.AES)));
-                MessageContract messageContract = MessageRepository.getInstance();
-                messageContract.add(new MessageModel(userContract.findUserByIP("0.0.0.0"), "fffffffffffffffffffffff"));
                 initializeAdminEvents();
             } else {
                 initializeClientEvents();
             }
+
             textViewMemberNum.setText(Utils.toPersian(" تعداد اعضا :" + userContract.getAll().size()));
             ((ReceiveEventsThread) receiverThread).on(EventType.JOIN, joinEventListener);
             ((ReceiveEventsThread) receiverThread).on(EventType.NEW_MSG, (NewMsgEventListener) messageModel -> {
-                runOnUiThread(() -> Toast.makeText(ChatActivity.this, messageModel.getText(), Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> {
+                    chatRecyclerAdapter.newMsg(messageModel);
+                    ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPosition(0);
+                });
             });
         } catch (IOException e) {
             e.printStackTrace();
             finish();
         }
+        MessageContract messageContract = MessageRepository.getInstance();
+        chatRecyclerAdapter = new ChatRecyclerAdapter(messageContract.getAll(), this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, true));
+        recyclerView.setAdapter(chatRecyclerAdapter);
     }
 
     private void initializeViews() {
         editTextMessage = findViewById(R.id.chatEditMessage);
         imageViewSend = findViewById(R.id.chatImageSend);
         textViewMemberNum = findViewById(R.id.chatTextMemberNum);
+        recyclerView = findViewById(R.id.chatRecycler);
         imageViewSend.setOnClickListener(this::onClick);
     }
 
@@ -121,9 +135,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         if (editTextMessage.getText().length() > 0) {
             senderThread = ThreadFactory.getThread(ThreadType.SENDER_EVENT);
             NetworkInformation networkInformation = new NetworkInformation(this);
-            ((SendEventsThread) senderThread).setMessageModel(new MessageModel(userContract.findUserByIP(networkInformation.getIpAddress()), editTextMessage.getText().toString()), this);
+            ((SendEventsThread) senderThread).setMessageModel(new MessageModel(userContract.findUserByIP(networkInformation.getIpAddress()), editTextMessage.getText().toString()), this, recyclerView);
             senderThread.setPriority(Thread.MAX_PRIORITY);
             senderThread.start();
+            editTextMessage.setText("");
         }
     }
 }
