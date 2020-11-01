@@ -20,6 +20,18 @@
         <item name="android:textSize">@dimen/sizeSloganText</item>
     </style>
 
+    <style name="TextViewChatText" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">#777575</item>
+        <item name="android:fontFamily">@font/iran_sans</item>
+        <item name="android:textSize">@dimen/sizeSloganText</item>
+    </style>
+
+    <style name="TextViewChatName" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/colorOwnChatName</item>
+        <item name="android:fontFamily">@font/iran_sans</item>
+        <item name="android:textSize">@dimen/sizeChatName</item>
+    </style>
+
     <style name="BlueButton" parent="Widget.AppCompat.Button">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:fontFamily">@font/iran_sans</item>

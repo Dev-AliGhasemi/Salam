@@ -7,4 +7,11 @@
     <color name="colorSlogan">#707070</color>
     <color name="colorSloganAlpha">#A9707070</color>
     <color name="colorProfile">#16A1A0A0</color>
+    <color name="colorProfBack">#3F51B5</color>
+    <color name="colorOwnChatBack">#D2E7EC</color>
+    <color name="colorOthersChatBack">#7FC2D3</color>
+    <color name="colorOwnChatName">#09667E</color>
+    <color name="colorOtherChatName">#075A70</color>
+
+
 </resources>

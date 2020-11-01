@@ -2,4 +2,6 @@
 <resources>
     <dimen name="sizeSloganTitle">15sp</dimen>
     <dimen name="sizeSloganText">15sp</dimen>
+    <dimen name="sizeChatName">13sp</dimen>
+
 </resources>
