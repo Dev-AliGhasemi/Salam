@@ -43,4 +43,9 @@ public class UserRepository implements UserContract {
         }
         return null;
     }
+
+    @Override
+    public void removeUser(UserModel userModel) {
+        userModels.remove(userModel);
+    }
 }

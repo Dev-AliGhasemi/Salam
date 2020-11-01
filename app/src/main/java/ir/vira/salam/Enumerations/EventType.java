@@ -1,7 +1,9 @@
 package ir.vira.salam.Enumerations;
 
 public enum EventType {
-    JOIN("join");
+    JOIN("join"),
+    NEW_MSG("new msg");
+
 
     private String eventType;
 

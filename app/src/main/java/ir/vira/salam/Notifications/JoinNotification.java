@@ -37,8 +37,6 @@ public class JoinNotification {
         Intent intentDecline = new Intent(context, DeclineJoinReceiver.class);
         Intent intentAccept = new Intent(context, AcceptJoinReceiver.class);
         intentDecline.putExtra("user", userModel);
-        intentAccept.putExtra("user", userModel);
-        intentAccept.putExtra("secretKey", userModel.getSecretKey().getEncoded());
         PendingIntent pendingIntentDecline = PendingIntent.getBroadcast(context, context.getResources().getInteger(R.integer.declineRequestCode), intentDecline, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent pendingIntentAccept = PendingIntent.getBroadcast(context, context.getResources().getInteger(R.integer.acceptRequestCode), intentAccept, PendingIntent.FLAG_UPDATE_CURRENT);
         SpannableString spannableStringAccept = new SpannableString("قبول");

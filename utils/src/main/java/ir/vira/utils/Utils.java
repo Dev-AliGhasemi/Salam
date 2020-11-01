@@ -227,6 +227,14 @@ public class Utils {
         return Base64.encodeToString(data, Base64.DEFAULT);
     }
 
+    public static String toPersian(String text) {
+        char[][] nums = new char[][]{{'0', '۰'}, {'1', '۱'}, {'2', '۲'}, {'3', '۳'}, {'4', '۴'}, {'5', '۵'}, {'6', '۶'}, {'7', '۷'}, {'8', '۸'}, {'9', '۹'}};
+        for (int i = 0; i < nums.length; i++) {
+            text = text.replace(nums[i][0], nums[i][1]);
+        }
+        return text;
+    }
+
     public static byte[] decodeToByte(String data) {
         return Base64.decode(data, Base64.DEFAULT);
     }

@@ -4,11 +4,17 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+
+import ir.vira.salam.Contracts.UserContract;
+import ir.vira.salam.DesignPatterns.Factory.RepositoryFactory;
+import ir.vira.salam.Enumerations.RepositoryType;
 import ir.vira.salam.Models.UserModel;
 import ir.vira.salam.Notifications.JoinNotification;
 import ir.vira.salam.R;
@@ -23,10 +29,13 @@ public class DeclineJoinReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        UserModel userModel = (UserModel) intent.getSerializableExtra("user");
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(JoinNotification.getNotifyId());
         Thread thread = new Thread(() -> {
             try {
+                UserContract userContract = (UserContract) RepositoryFactory.getRepository(RepositoryType.USER_REPO);
+                userContract.removeUser(userContract.findUserByIP(userModel.getIp()));
                 Socket socket = new Socket(userModel.getIp(), context.getResources().getInteger(R.integer.portNumber));
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("event", "JOIN");
