@@ -28,6 +28,11 @@ public class MessageRepository implements MessageContract {
 
     @Override
     public void add(MessageModel item) {
+        messageModels.add(item);
+    }
 
+    @Override
+    public List<MessageModel> getAll() {
+        return messageModels;
     }
 }

@@ -15,10 +15,14 @@ import ir.vira.salam.R;
 
 public class DeclineJoinReceiver extends BroadcastReceiver {
 
+    private UserModel userModel;
+
+    public void setUserModel(UserModel userModel) {
+        this.userModel = userModel;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        UserModel userModel = (UserModel) intent.getSerializableExtra("user");
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(JoinNotification.getNotifyId());
         Thread thread = new Thread(() -> {

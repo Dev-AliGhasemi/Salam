@@ -6,4 +6,6 @@ public interface Contract<T> {
     void addAll(List<T> items);
 
     void add(T item);
+
+    List<T> getAll();
 }

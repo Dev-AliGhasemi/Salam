@@ -27,7 +27,12 @@ public class UserRepository implements UserContract {
 
     @Override
     public void add(UserModel item) {
+        userModels.add(item);
+    }
 
+    @Override
+    public List<UserModel> getAll() {
+        return userModels;
     }
 
     @Override

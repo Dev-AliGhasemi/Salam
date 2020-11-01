@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,25 +19,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -143,25 +133,25 @@ public class MainActivity extends AppCompatActivity {
                                 List<MessageModel> messageModels = new ArrayList<>();
                                 JSONArray jsonArrayUsers = jsonObject.getJSONArray("users");
                                 JSONArray jsonArrayMessages = jsonObject.getJSONArray("messages");
-                                Bitmap profile;
                                 SecretKey secretKey;
-                                byte[] decodedKey, decodedProfile;
-                                String decryptedProfile, ip, name;
+                                byte[] decodedKey;
+                                decodedKey = Utils.decodeToByte(jsonObject.getString("secretKey"));
+                                secretKey = new SecretKeySpec(decodedKey, EncryptionAlgorithm.AES.name());
+                                String ip, name;
                                 for (int i = 0; i < jsonArrayUsers.length(); i++) {
-                                    decodedKey = Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("secretKey"));
-                                    secretKey = new SecretKeySpec(decodedKey, EncryptionAlgorithm.AES.name());
-                                    decodedProfile = Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("profile"));
-                                    decryptedProfile = Utils.decryptData(decodedProfile, secretKey, EncryptionAlgorithm.AES);
-                                    decodedProfile = Base64.decode(decryptedProfile, Base64.DEFAULT);
-                                    profile = BitmapFactory.decodeByteArray(decodedProfile, 0, decodedProfile.length);
-                                    ip = jsonArrayUsers.getJSONObject(i).getString("ip");
-                                    name = jsonArrayUsers.getJSONObject(i).getString("name");
-                                    UserModel userModel = new UserModel(ip, name, profile, secretKey);
+                                    ip = Utils.decryptData(Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("ip")), secretKey, EncryptionAlgorithm.AES);
+                                    name = Utils.decryptData(Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("name")), secretKey, EncryptionAlgorithm.AES);
+                                    Bitmap profile = Utils.getBitmap(Utils.decryptData(Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("profile")), secretKey, EncryptionAlgorithm.AES));
+                                    SecretKey secretKeyForUser = new SecretKeySpec(Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("secretKey")), EncryptionAlgorithm.AES.name());
+                                    UserModel userModel = new UserModel(ip, name, profile, secretKeyForUser);
                                     userModels.add(userModel);
                                 }
                                 userContract.addAll(userModels);
+                                String text;
                                 for (int i = 0; i < jsonArrayMessages.length(); i++) {
-                                    MessageModel messageModel = new MessageModel(userContract.findUserByIP(jsonArrayMessages.getJSONObject(i).getString("ip")), jsonArrayMessages.getJSONObject(i).getString("text"));
+                                    ip = Utils.decryptData(Utils.decodeToByte(jsonArrayMessages.getJSONObject(i).getString("ip")), secretKey, EncryptionAlgorithm.AES);
+                                    text = Utils.decryptData(Utils.decodeToByte(jsonArrayMessages.getJSONObject(i).getString("text")), secretKey, EncryptionAlgorithm.AES);
+                                    MessageModel messageModel = new MessageModel(userContract.findUserByIP(ip), text);
                                     messageModels.add(messageModel);
                                 }
                                 messageContract.addAll(messageModels);
