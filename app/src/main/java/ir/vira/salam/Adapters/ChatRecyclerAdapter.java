@@ -52,6 +52,8 @@ public class ChatRecyclerAdapter extends RecyclerView.Adapter<ChatViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
+        if (messageModels.get(position).getUserModel().getProfile().getHeight() != messageModels.get(position).getUserModel().getProfile().getWidth())
+            holder.roundedImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         holder.roundedImageView.setImageBitmap(messageModels.get(position).getUserModel().getProfile());
         holder.textViewText.setText(messageModels.get(position).getText());
         holder.textViewName.setText(messageModels.get(position).getUserModel().getName());

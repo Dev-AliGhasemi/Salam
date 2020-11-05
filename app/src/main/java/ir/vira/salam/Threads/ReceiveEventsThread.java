@@ -1,14 +1,22 @@
 package ir.vira.salam.Threads;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.icu.lang.UProperty;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
+import android.widget.ImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.CDATASection;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,6 +26,7 @@ import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -52,14 +61,18 @@ public class ReceiveEventsThread extends Thread {
             try {
                 Socket socket = serverSocket.accept();
                 DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-                String data = dataInputStream.readUTF();
+                String data =  dataInputStream.readUTF();
+                dataInputStream.close();
+                socket.close();
                 JSONObject jsonObject = new JSONObject(data);
                 switch (EventType.valueOf(jsonObject.getString("event"))) {
                     case JOIN:
                         SecretKey secretKey = new SecretKeySpec(Utils.decodeToByte(jsonObject.getString("secretKey")), EncryptionAlgorithm.AES.name());
                         String ip = Utils.decryptData(Utils.decodeToByte(jsonObject.getString("ip")), secretKey, EncryptionAlgorithm.AES);
                         String name = Utils.decryptData(Utils.decodeToByte(jsonObject.getString("name")), secretKey, EncryptionAlgorithm.AES);
-                        Bitmap profile = Utils.getBitmap(Utils.decryptData(Utils.decodeToByte(jsonObject.getString("profile")), secretKey, EncryptionAlgorithm.AES));
+                        String profileStr = jsonObject.getString("profile");
+                        byte[] profileStream = Utils.decodeToByte(profileStr);
+                        Bitmap profile = BitmapFactory.decodeByteArray(profileStream, 0, profileStream.length);
                         UserModel userModel = new UserModel(ip, name, profile, secretKey);
                         socket.close();
                         ((JoinEventListener) listeners.get(EventType.JOIN)).join(userModel);

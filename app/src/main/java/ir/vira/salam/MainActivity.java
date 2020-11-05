@@ -11,7 +11,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Base64;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,11 +22,18 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnSendRequest;
     private SharedPreferences sharedPreferences;
     private Utils utils;
+    private Bitmap profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
         utils = Utils.getInstance(this);
         sharedPreferences = getSharedPreferences(getString(R.string.shared_name), Context.MODE_PRIVATE);
         if (sharedPreferences.contains(getString(R.string.shared_key_profile))) {
-            Bitmap bitmap = Utils.getBitmap(sharedPreferences.getString(getString(R.string.shared_key_profile), ""));
-            circleImageView.setImageBitmap(bitmap);
+            profile = Utils.getBitmap(sharedPreferences.getString(getString(R.string.shared_key_profile), ""));
+            circleImageView.setImageBitmap(profile);
             textViewProfile.setVisibility(View.INVISIBLE);
         }
 
@@ -88,11 +97,6 @@ public class MainActivity extends AppCompatActivity {
                     case 1:
                         utils.takeImage(this, getResources().getInteger(R.integer.takeImage));
                         break;
-                    case 2:
-                        circleImageView.setImageBitmap(null);
-                        textViewProfile.setVisibility(View.VISIBLE);
-                        sharedPreferences.edit().remove(getString(R.string.shared_key_profile)).commit();
-                        break;
                 }
             });
             alertDialog.show();
@@ -100,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
         btnSendRequest.setOnClickListener((view) -> {
             if (editTextName.length() == 0)
                 editTextName.setError("لطفا نامی برای خود وارد کنید.");
+            else if (profile == null)
+                AdvancedToast.makeText(this, "شما باید یک پروفایل انتخاب کنید !", Toast.LENGTH_LONG).show();
             else {
                 sharedPreferences.edit().putString(getString(R.string.shared_key_username), editTextName.getText().toString()).commit();
                 btnSendRequest.setVisibility(View.INVISIBLE);
@@ -113,7 +119,11 @@ public class MainActivity extends AppCompatActivity {
                             jsonObject.put("ip", Utils.encodeToString(Utils.encryptData(networkInformation.getIpAddress(), EncryptionAlgorithm.AES)));
                             jsonObject.put("name", Utils.encodeToString(Utils.encryptData(editTextName.getText().toString(), EncryptionAlgorithm.AES)));
                             jsonObject.put("secretKey", Utils.encodeToString(utils.generateKey(EncryptionAlgorithm.AES).getEncoded()));
-                            jsonObject.put("profile", Utils.encodeToString(Utils.encryptData(sharedPreferences.getString(getString(R.string.shared_key_profile), ""), EncryptionAlgorithm.AES)));
+                            float ratio = (float) profile.getWidth() / profile.getHeight();
+                            if (ratio > 1 || ratio < 1)
+                                jsonObject.put("profile", Utils.getEncodeImage(Bitmap.createScaledBitmap(profile, 100, (int) (100 / ratio), true)));
+                            else
+                                jsonObject.put("profile", Utils.getEncodeImage(Bitmap.createScaledBitmap(profile, 100, 100, true)));
                             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                             dataOutputStream.writeUTF(jsonObject.toString());
                             dataOutputStream.flush();
@@ -138,10 +148,12 @@ public class MainActivity extends AppCompatActivity {
                                 decodedKey = Utils.decodeToByte(jsonObject.getString("secretKey"));
                                 secretKey = new SecretKeySpec(decodedKey, EncryptionAlgorithm.AES.name());
                                 String ip, name;
+                                byte[] prof;
                                 for (int i = 0; i < jsonArrayUsers.length(); i++) {
                                     ip = Utils.decryptData(Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("ip")), secretKey, EncryptionAlgorithm.AES);
                                     name = Utils.decryptData(Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("name")), secretKey, EncryptionAlgorithm.AES);
-                                    Bitmap profile = Utils.getBitmap(Utils.decryptData(Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("profile")), secretKey, EncryptionAlgorithm.AES));
+                                    prof = Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("profile"));
+                                    Bitmap profile = BitmapFactory.decodeByteArray(prof, 0, prof.length);
                                     SecretKey secretKeyForUser = new SecretKeySpec(Utils.decodeToByte(jsonArrayUsers.getJSONObject(i).getString("secretKey")), EncryptionAlgorithm.AES.name());
                                     UserModel userModel = new UserModel(ip, name, profile, secretKeyForUser);
                                     userModels.add(userModel);
@@ -188,26 +200,32 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == getResources().getInteger(R.integer.chooseImageFromGallery) && data != null) {
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+                profile = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
                 circleImageView.setImageURI(data.getData());
                 textViewProfile.setVisibility(View.INVISIBLE);
-                putProfileInSharedPreferences(bitmap);
+                putProfileInSharedPreferences(profile);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (requestCode == getResources().getInteger(R.integer.takeImage)) {
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Utils.getTempImage());
-                circleImageView.setImageBitmap(bitmap);
-                putProfileInSharedPreferences(bitmap);
+                profile = MediaStore.Images.Media.getBitmap(getContentResolver(), Utils.getTempImage());
+                circleImageView.setImageBitmap(profile);
+                putProfileInSharedPreferences(profile);
+                textViewProfile.setVisibility(View.INVISIBLE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            textViewProfile.setVisibility(View.INVISIBLE);
         }
     }
 
     void putProfileInSharedPreferences(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, byteArrayOutputStream);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 2;
+        options.inPurgeable = true;
+        bitmap = BitmapFactory.decodeByteArray(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.toByteArray().length, options);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.shared_key_profile), utils.getEncodeImage(bitmap));
         editor.commit();

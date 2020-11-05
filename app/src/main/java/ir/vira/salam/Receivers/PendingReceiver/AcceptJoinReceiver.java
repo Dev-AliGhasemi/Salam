@@ -5,12 +5,14 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -30,8 +32,6 @@ import ir.vira.utils.Utils;
 
 public class AcceptJoinReceiver extends BroadcastReceiver {
 
-    private TextView textViewMemberNum;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -47,11 +47,8 @@ public class AcceptJoinReceiver extends BroadcastReceiver {
                     JSONObject jsonUser = new JSONObject();
                     jsonUser.put("name", Utils.encodeToString(Utils.encryptData(user.getName(), EncryptionAlgorithm.AES)));
                     jsonUser.put("ip", Utils.encodeToString(Utils.encryptData(user.getIp(), EncryptionAlgorithm.AES)));
-                    if (user.getProfile() != null)
-                        jsonUser.put("profile", Utils.encodeToString(Utils.encryptData(Utils.getEncodeImage(user.getProfile()), EncryptionAlgorithm.AES)));
-                    else
-                        jsonUser.put("profile", "");
                     jsonUser.put("secretKey", Utils.encodeToString(user.getSecretKey().getEncoded()));
+                    jsonUser.put("profile", Utils.getEncodeImage(user.getProfile()));
                     jsonArrayUsers.put(jsonUser);
                 }
                 MessageContract messageContract = (MessageContract) RepositoryFactory.getRepository(RepositoryType.MESSAGE_REPO);

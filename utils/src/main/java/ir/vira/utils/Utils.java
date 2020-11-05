@@ -176,7 +176,7 @@ public class Utils {
 
     public static String getEncodeImage(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream);
         String encodedStr = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
         return encodedStr;
     }

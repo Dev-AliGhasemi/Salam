@@ -24,9 +24,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_marginLeft="10dp"
                 android:text="علی"
                 android:textDirection="rtl" />
 
@@ -51,5 +51,6 @@
         android:layout_height="40dp"
         android:layout_gravity="bottom"
         android:padding="5dp"
-        android:src="@drawable/ic_admin" />
+        android:src="@drawable/ic_admin"
+        app:riv_corner_radius="20dp" />
 </LinearLayout>
