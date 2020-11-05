@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             if (editTextName.length() == 0)
                 editTextName.setError("لطفا نامی برای خود وارد کنید.");
             else if (profile == null)
-                AdvancedToast.makeText(this, "شما باید یک پروفایل انتخاب کنید !", Toast.LENGTH_LONG).show();
+                AdvancedToast.makeText(this, "شما باید یک پروفایل انتخاب کنید !", Toast.LENGTH_LONG, "fonts/iran_sans.ttf").show();
             else {
                 sharedPreferences.edit().putString(getString(R.string.shared_key_username), editTextName.getText().toString()).commit();
                 btnSendRequest.setVisibility(View.INVISIBLE);

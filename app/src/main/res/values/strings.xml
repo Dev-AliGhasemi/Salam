@@ -18,6 +18,5 @@
     <string-array name="item_name">
         <item>انتخاب از گالری</item>
         <item>گرفتن عکس</item>
-        <item>حذف کردن</item>
     </string-array>
 </resources>
