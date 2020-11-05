@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if (requestCode == getResources().getInteger(R.integer.takeImage)) {
+        } else if (requestCode == getResources().getInteger(R.integer.takeImage) && data != null) {
             try {
                 profile = MediaStore.Images.Media.getBitmap(getContentResolver(), Utils.getTempImage());
                 circleImageView.setImageBitmap(profile);
